@@ -1,0 +1,5 @@
+# Region file format: DS9 version 4.1
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+fk5
+circle(5:07:49.548,+30:24:05.078,0.540") # color=blue width=3 font="helvetica 14 normal roman" text={RW Aur A}
+panda(5:07:49.435,+30:24:04.706,230,470,1,0.553",1.107",1) # color=blue width=3 font="helvetica 14 normal roman" text={bkg} background
