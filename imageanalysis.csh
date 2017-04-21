@@ -3,10 +3,10 @@ set scriptdir = $PWD
 cd /melkor/d1/guenther/downdata/Chandra/RWaur
 
 # Following Schneider et al. article here.
-# RW Aur B
+# RW Aur A
 set srca = "circle(5:07:49.548,+30:24:05.078,0.00900')"
 set bkga = "pie(5:07:49.435,+30:24:04.706,0.016666667',0.033333333',230.0018,470.0018)"
-# RW Aur A (source region of same size, but much larger background region
+# RW Aur B (source region of same size, but much larger background region
 set srcb = "circle(5:07:49.434,+30:24:04.692,0.00900')"
 set bkgb = "circle(5:07:49.470,+30:24:46.246,0.41469')"
 

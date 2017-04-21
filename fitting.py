@@ -90,14 +90,6 @@ for i, c in enumerate(colors):
     crv = 'crv{0}'.format(2*i+2)
     set_curve(crv, "*.color={}".format(c))
 
-
-add_label(1.5, 0.025, "2013-Jan-12", ["color", "red"])
-add_label(1.5, 0.015, "2015-Apr-16", ["color", "blue"])
-add_label(3., 0.025, "2017-Jan (merged)", ["color", "olive"])
-
-
-set_label("all", ['size', 18])
-
 for i, idn in enumerate([1,2, 5]):
     plot_bkg(idn, overplot=True)
     plot_bkg_model(idn, overplot=True)
@@ -105,21 +97,63 @@ for i, idn in enumerate([1,2, 5]):
     set_curve('crv{0}'.format(7 + i), "*.color=gray")
     set_histogram('hist{0}'.format(i + 1), "*.color=gray")
 
+def make_plot_nice():
+    add_label(1.5, 0.025, "2013-Jan-12", ["color", "red"])
+    add_label(1.5, 0.015, "2015-Apr-16", ["color", "blue"])
+    add_label(3., 0.025, "2017-Jan (merged)", ["color", "olive"])
+    set_label("all", ['size', 18])
+    # no limits placed on background, but that's not an issue as long as we only use it for plotting.
+    limits(X_AXIS, 0.4, 9.)
+    limits(Y_AXIS, 5e-5, 0.05)
+    # Now make the plot nicer
+    set_arbitrary_tick_positions("ax1",[5,3,2,1,0.5,8],["5","3","2","1","0.5","8"])
+    set_axis("ax1","minortick.visible=0 tickformat=%3.1g label.size=18 ticklabel.size=16")
+    log_scale(X_AXIS)
+    set_arbitrary_tick_positions("ax1",[5,3,2,1,0.5,8],["5","3","2","1","0.5","8"])
+    set_axis("ay1","label.size=18 offset.perpendicular=70.00 ticklabel.size=16")
+    set_plot_title("")
 
-# no limits placed on background, but that's not an issue as long as we only use it for plotting.
-limits(X_AXIS, 0.4, 9.)
-limits(Y_AXIS, 5e-5, 0.05)
-
-# Now make the plot nicer
-set_arbitrary_tick_positions("ax1",[5,3,2,1,0.5,8],["5","3","2","1","0.5","8"])
-set_axis("ax1","minortick.visible=0 tickformat=%3.1g label.size=18 ticklabel.size=16")
-log_scale(X_AXIS)
-set_arbitrary_tick_positions("ax1",[5,3,2,1,0.5,8],["5","3","2","1","0.5","8"])
-set_axis("ay1","label.size=18 offset.perpendicular=70.00 ticklabel.size=16")
-set_plot_title("")
+make_plot_nice()
 
 print_window('/melkor/d1/guenther/Dropbox/my_articles/RWAur/spec.png', ['export.clobber', True])
 print_window('/melkor/d1/guenther/Dropbox/my_articles/RWAur/spec.pdf', ['export.clobber', True])
+
+
+## Now make the same plot background subtracted
+load_data(11, '14539_A_grp.pi')
+load_bkg(11, '14539_A_bkg.pi')
+load_data(12, '17644_A_grp.pi')
+load_bkg(12, '17644_A_bkg.pi')
+load_data(13, '2017_A_src.pi')
+load_bkg(13, '2017_A_bkg.pi')
+
+
+for i in [11, 12, 13]:
+    group_counts(i, 5)
+
+for i in [11, 12, 13]:
+    subtract(i)
+
+
+set_source(11, a1 * (v11 + v12))
+set_source(12, a2 * (v21 + v22))
+set_source(13, a3 * (v31 + v32))
+
+plot_fit(11)
+log_scale()
+plot_fit(12, overplot=True)
+plot_fit(13, overplot=True)
+for i, c in enumerate(colors):
+    crv = 'crv{0}'.format(2*i+1)
+    set_curve(crv, "*.color={}".format(c))
+    crv = 'crv{0}'.format(2*i+2)
+    set_curve(crv, "*.color={}".format(c))
+
+make_plot_nice()
+print_window('/melkor/d1/guenther/Dropbox/my_articles/RWAur/spec_subtracted.png', ['export.clobber', True])
+print_window('/melkor/d1/guenther/Dropbox/my_articles/RWAur/spec_subtracted.pdf', ['export.clobber', True])
+
+
 
 confidence 1.645-sigma (90.003%) bounds:
    Param            Best-Fit  Lower Bound  Upper Bound
