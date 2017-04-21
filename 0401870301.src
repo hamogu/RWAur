@@ -1,0 +1,28 @@
+### Source parameters ###
+# The parameters for source extraction can be defined (in order of precedence)
+# * as command line parameters to make
+# * in $(SRCFILE) (this is an example for such a file)
+# * in the makefile itself
+
+# specify a GTI file (in addition to the filtering for proton flares)
+# This can the used, e.g. to extract spectra of a stellar flare
+GTIFILE=
+
+# Source name for filenames
+SRC = RWAur
+# MOS and PN expressions for source and bg extractions regions
+MOS_SRC = circle(27265, 27505, 600)
+MOS_BG = circle(31086,30883,2100)
+PN_SRC = circle(27200, 27520, 600)
+PN_BG = circle(28600,24650,1000)
+
+#list all *im.fits files where no spectra shold be extracted (e.g. target outside FOV)
+NO_SPEC = 
+
+#list all *im.fits files where no lightcurves shold be extracted (e.g. target outside FOV)
+NO_LC = $(NO_SPEC)
+
+LC_BIN = 600
+# filter times for gti
+MOS_gti = "RATE<1."
+PN_gti = "RATE<10."
