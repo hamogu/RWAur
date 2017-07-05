@@ -9,7 +9,7 @@
 GTIFILE=noflare.gti
 
 # Source name for filenames
-SRC = RWAur
+SRC = RWAur_noflare
 # MOS and PN expressions for source and bg extractions regions
 MOS_SRC = circle(27265, 27505, 600)
 MOS_BG = circle(31086,30883,2100)

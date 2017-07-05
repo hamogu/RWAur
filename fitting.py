@@ -1,3 +1,7 @@
+import sys
+sys.path.append('/melkor/d1/guenther/projects/Chandraprojects/RWAur/')
+from utils import save_conf
+
 for i, obsid in enumerate(['14539', '17644', '17764', '19980']):
     load_data(i + 1, obsid + '_A_grp.pi')
     load_bkg(i + 1, obsid + '_A_bkg.pi')
@@ -55,7 +59,7 @@ v32.norm = 3.6 / 2.7 * v31.norm
 
 for v in [v12, v22, v32]:
     v.kT = 20.
-    v.kT.frozen=True
+    v.kT.frozen = True
 
 for v in [v21, v31]:
     v.kT = v11.kT
@@ -68,11 +72,12 @@ v11.kT.frozen = True
 fit(1,2,3,4)
 set_conf_opt("sigma", 1.645)
 conf(1,2,3,4)
-confres = get_conf_results()
-import json
-with open('/melkor/d1/guenther/Dropbox/my_articles/RWAur/spec_fit.json', 'w') as f:
-    json.dump({'name': confres.parnames, 'val': confres.parvals,
-               'up': confres.parmaxes, 'down': confres.parmins}, f)
+# Saving the same confidence results three times, because save_conf
+# cannot calculate more than one flux
+# Easier to write a small file three times than to generalize save_conf
+save_conf('spec_fit.json', energy_flux=1, absorbpars=[a1.nH])
+save_conf('spec_fit2.json', energy_flux=2, absorbpars=[a2.nH])
+save_conf('spec_fit34.json', energy_flux=3, absorbpars=[a3.nH])
 
 for i in [1,2,3,4]:
     subtract(i)
@@ -83,7 +88,7 @@ plot_fit(2, overplot=True)
 plot_fit(5, overplot=True)
 
 
-colors = ['red', 'blue', 'olive']
+colors = ['red', 'blue', 'default']
 for i, c in enumerate(colors):
     crv = 'crv{0}'.format(2*i+1)
     set_curve(crv, "*.color={}".format(c))
@@ -98,20 +103,26 @@ for i, idn in enumerate([1,2, 5]):
     set_histogram('hist{0}'.format(i + 1), "*.color=gray")
 
 def make_plot_nice():
-    add_label(1.5, 0.025, "2013-Jan-12", ["color", "red"])
-    add_label(1.5, 0.015, "2015-Apr-16", ["color", "blue"])
-    add_label(3., 0.025, "2017-Jan (merged)", ["color", "olive"])
-    set_label("all", ['size', 18])
+    add_label(1.5, 0.03 * .6**2, "2013-Jan-12", ["color", "red"])
+    add_label(1.5, 0.03 * 0.6, "2015-Apr-16", ["color", "blue"])
+    add_label(1.5, 0.03, "2017-Jan (merged)", ["color", "default"])
+    set_label("all", ['size', 30])
     # no limits placed on background, but that's not an issue as long as we only use it for plotting.
     limits(X_AXIS, 0.4, 9.)
     limits(Y_AXIS, 5e-5, 0.05)
     # Now make the plot nicer
     set_arbitrary_tick_positions("ax1",[5,3,2,1,0.5,8],["5","3","2","1","0.5","8"])
-    set_axis("ax1","minortick.visible=0 tickformat=%3.1g label.size=18 ticklabel.size=16")
+    set_axis("ax1","minortick.visible=0 tickformat=%3.1g label.size=30 ticklabel.size=26 offset.perpendicular=60")
     log_scale(X_AXIS)
     set_arbitrary_tick_positions("ax1",[5,3,2,1,0.5,8],["5","3","2","1","0.5","8"])
-    set_axis("ay1","label.size=18 offset.perpendicular=70.00 ticklabel.size=16")
+    set_axis("ay1","label.size=30 offset.perpendicular=90.00 ticklabel.size=26 ")
     set_plot_title("")
+    plot = get_plot()
+    plot.rightmargin = 0.01
+    plot.topmargin = 0.01
+    plot.leftmargin = 0.17
+    plot.bottommargin = 0.15
+    set_plot(plot)
 
 make_plot_nice()
 
