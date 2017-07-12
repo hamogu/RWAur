@@ -63,20 +63,52 @@ set_plot(plot)
 add_plot(0.25,0.45,0.65,0.92)
 plot_fit(3, overplot=True)
 set_curve('crv2', "*.color=default")
-limits(X_AXIS, 6.4, 7.)
+limits(X_AXIS, 6.2, 7.2)
 set_axis("ax1","minortick.visible=1 tickformat=%3.2g ticklabel.size=20")
 set_axis("ay1","ticklabel.size=20")
-v1.kT = 5.5
-v1.kT.frozen = True
-fit(1, 2)
-plot_fit(3, overplot=True)
-set_curve('crv4', "*.color=default line.style=longdash")
+#v1.kT = 5.5
+#v1.kT.frozen = True
+#fit(1, 2)
+#plot_fit(3, overplot=True)
+#set_curve('crv4', "*.color=default line.style=longdash")
 
 # Now back to the big plot and add the dashed line there, too.
-current_plot("plot1")
-plot_fit(3, overplot=True)
-set_curve('crv4', "*.color=default line.style=longdash")
+# current_plot("plot1")
+# plot_fit(3, overplot=True)
+# set_curve('crv4', "*.color=default line.style=longdash")
 
+# Now back to the inset and add XMM there.
+# Note that the XMM parameter file re-uses the name "v1" and thus
+# overwrites the value of the Chandra v1 defined above.
+current_plot("plot2")
+from shmodelshelper import load_pars
+
+xmmpath = '/melkor/d1/guenther/downdata/XMM/RWAur/0401870301/'
+
+load_data(11, xmmpath + 'RWAur_1319_0401870301_EPN_S003_spec.15grp')
+group_counts(11, 30)
+set_model(11, xsphabs.a1 * (xsvapec.v1 + xsvapec.v2 + xsvapec.v3))
+
+for v in [v2, v3]:
+    for elem in ['C', 'N', 'O','Ne', 'Fe', 'Si', 'Mg']:
+        setattr(v, elem, getattr(v1, elem))
+
+v1.Si = v1.Fe
+v1.Mg = v1.Fe
+
+load_pars('RWAurXMM.pars', [a1, v1, v2, v3])
+
+# roughly rescale XMM data by ratio of arfs at 6.7 keV
+set_exposure(11, get_exposure(11) / 95.*660.)
+for v in [v1, v2, v3]:
+    v.norm = v.norm.val * 95./660.
+
+plot_fit(11, overplot=True)
+set_curve('crv3', "*.color=olive")
+set_curve('crv3', "symbol.fill=True")
+set_curve('crv4', "*.color=olive")
+limits(X_AXIS, 6.2, 7.2)
+limits(Y_AXIS, 3e-5, 0.011)
 
 print_window('/melkor/d1/guenther/Dropbox/my_articles/RWAur/spec_17.png', ['export.clobber', True])
 print_window('/melkor/d1/guenther/Dropbox/my_articles/RWAur/spec_17.pdf', ['export.clobber', True])
