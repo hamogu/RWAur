@@ -1,6 +1,7 @@
 import sys
 sys.path.append('/melkor/d1/guenther/projects/Chandraprojects/RWAur/')
 from utils import save_conf
+from shmodelshelper import load_pars, copy_pars
 
 for i, obsid in enumerate(['14539', '17644', '17764', '19980']):
     load_data(i + 1, obsid + '_A_grp.pi')
@@ -25,26 +26,38 @@ set_source(2, xsphabs.a2 * (xsvapec.v21 + xsvapec.v22))
 set_source(3, xsphabs.a3 * (xsvapec.v31 + xsvapec.v32))
 set_source(4, a3 * (v31 + v32))
 set_source(5, a3 * (v31 + v32))
-for i in [1,2,3,4, 5]:
-    set_bkg_source(i, xsphabs.Ba1 * (xsvapec.Bv2 + xsvapec.Bv1))
 
-# Set RW Aur B to the values found in Skinner and Guedel
-Ba1.nH = 0.043
-Ba1.nH.frozen = True
-Bv1.kT = 0.98
-Bv1.kT.frozen = True
-Bv2.kT = 3.15
-Bv2.kT.frozen = True
-Bv1.Ne = 1.69
-Bv1.Fe = 0.36
-Bv2.Ne = Bv1.Ne
-Bv2.Fe = Bv1.Fe
+# Set it now just to defined the right model instances in sherpa language
+set_bkg_source(1, xsphabs.a1 * (xsvapec.v1 + xsvapec.v2 + xsvapec.v3))
+# Now overwrite with what we want
+set_bkg_source(1, scale1d.scaleB * xsphabs.B1a1 * (xsvapec.B1v1 + xsvapec.B1v2 + xsvapec.B1v3))
+load_pars('RWAurBChan1.pars', [a1, v1, v2, v3])
+for oldcomp, newcomp in zip([a1, v1, v2, v3], [B1a1, B1v1, B1v2, B1v3]):
+    copy_pars(oldcomp, newcomp)
+    for par in newcomp.pars:
+        par.frozen=True
+
+set_bkg_source(2, scale1d.scaleB * xsphabs.B2a1 * (xsvapec.B2v1 + xsvapec.B2v2 + xsvapec.B2v3))
+
+load_pars('RWAurBChan2.pars', [a1, v1, v2, v3])
+for oldcomp, newcomp in zip([a1, v1, v2, v3], [B2a1, B2v1, B2v2, B2v3]):
+    copy_pars(oldcomp, newcomp)
+    for par in newcomp.pars:
+        par.frozen=True
+
+for i in [3,4, 5]:
+    set_bkg_source(i, scale1d.scaleB * xsphabs.B3a1 * (xsvapec.B3v1 + xsvapec.B3v2 + xsvapec.B3v3))
+
+load_pars('RWAurBChan3.pars', [a1, v1, v2, v3])
+for oldcomp, newcomp in zip([a1, v1, v2, v3], [B3a1, B3v1, B3v2, B3v3]):
+    copy_pars(oldcomp, newcomp)
+    for par in newcomp.pars:
+        par.frozen=True
+
 fit_bkg()
 # result of fit is
-Bv2.norm = 8.08734e-06
-Bv1.norm = 4.85221e-06
-Bv1.norm.frozen = True
-Bv2.norm.frozen = True
+scaleB.c0 = 0.0475223
+scaleB.c0.frozen = True
 
 v11.Fe = 0.41
 v11.Ne = 1.39
