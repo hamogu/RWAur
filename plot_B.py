@@ -39,7 +39,7 @@ set_curve('crv2', "*.color=olive")
 set_curve('crv3', "*.color=orange")
 set_curve('crv4', "*.color=orange")
 
-add_label(3., 0.5, "XMM 2013", ["color", "olive"])
+add_label(3., 0.5, "XMM 2007", ["color", "olive"])
 add_label(3., 0.5 * 0.5, "RW Aur AB", ["color", "olive"])
 add_label(.5, 0.003, "Chandra 2013", ["color", "orange"])
 add_label(.5, 0.5*0.003, "RW Aur B", ['color', 'orange'])
