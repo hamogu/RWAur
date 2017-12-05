@@ -92,6 +92,7 @@ save_conf('spec_fit.json', energy_flux=1, absorbpars=[a1.nH])
 save_conf('spec_fit2.json', energy_flux=2, absorbpars=[a2.nH])
 save_conf('spec_fit34.json', energy_flux=3, absorbpars=[a3.nH])
 
+
 for i in [1,2,3,4]:
     subtract(i)
 
