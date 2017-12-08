@@ -110,5 +110,8 @@ set_curve('crv4', "*.color=olive")
 limits(X_AXIS, 6.2, 7.2)
 limits(Y_AXIS, 3e-5, 0.011)
 
+add_vline(6.62, "color=skyblue line.thickness=4 depth=1")
+add_vline(6.7, "color=skyblue line.thickness=4 depth=1")
+
 print_window('/melkor/d1/guenther/Dropbox/my_articles/RWAur/spec_17.png', ['export.clobber', True])
 print_window('/melkor/d1/guenther/Dropbox/my_articles/RWAur/spec_17.pdf', ['export.clobber', True])
