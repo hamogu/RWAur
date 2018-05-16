@@ -39,7 +39,23 @@ foreach obsid (14539 17644 17764 19980)
 
 end
 
+# Combine 2017 spectra. This is not used for analysis, only for display purposes.
 combine_spectra 17764_A_grp.pi,19980_A_grp.pi 2017_A bscale_method='time' clob+
 combine_spectra 17764_B_grp.pi,19980_B_grp.pi 2017_B bscale_method='time' clob+
 
+# Split extraction of 2017 (1) steady and flare
+
+dmcopy "17764/17764_evt2.fits[time=600332393:600362393]" 17764/17764_evt2_preflare.fits
+dmcopy "17764/17764_evt2.fits[time=600362393:600382393]" 17764/17764_evt2_flare.fits
+
+specextract infile="17764/17764_evt2_preflare.fits[sky=$srca]" bkgfile="17764/17764_evt2_preflare.fits[sky=$bkga]" outroot=17764_A_preflare correctpsf=yes weight=no asp=17764/full_asol_corrected.fits clob+
+specextract infile="17764/17764_evt2_preflare.fits[sky=$srcb]" bkgfile="17764/17764_evt2_preflare.fits[sky=$bkgb]" outroot=17764_B_preflare correctpsf=yes weight=no asp=17764/full_asol_corrected.fits clob+
+
+specextract infile="17764/17764_evt2_flare.fits[sky=$srca]" bkgfile="17764/17764_evt2_flare.fits[sky=$bkga]" outroot=17764_A_flare correctpsf=yes weight=no asp=17764/full_asol_corrected.fits clob+
+specextract infile="17764/17764_evt2_flare.fits[sky=$srcb]" bkgfile="17764/17764_evt2_flare.fits[sky=$bkgb]" outroot=17764_B_flare correctpsf=yes weight=no asp=17764/full_asol_corrected.fits clob+
+
+
+
 cd $scriptdir
+
+

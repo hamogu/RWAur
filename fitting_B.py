@@ -1,115 +1,105 @@
 import sys
 sys.path.append('/melkor/d1/guenther/projects/Chandraprojects/RWAur/')
-from utils import save_conf
-from shmodelshelper import save_pars, load_pars
-
-xmmpath = '/melkor/d1/guenther/downdata/XMM/RWAur/0401870301/'
-
-set_conf_opt("sigma", 1.645)
-set_conf_opt('numcores', 24)  # for melkor
-
-set_xsabund("angr")  # for consistency with Guedel et al 2014 and Schneider et al 2015
-
-
-
-load_data(11, xmmpath + 'RWAur_1319_0401870301_EPN_S003_spec.15grp')
-load_data(12, xmmpath + 'RWAur_1319_0401870301_EMOS1_S001_spec.15grp')
-load_data(13, xmmpath + 'RWAur_1319_0401870301_EMOS2_S002_spec.15grp')
-
-for i in [11,12,13]:
-    # Fit the Fe line
-    set_source(i, const1d.c1 + gauss1d.g1)
-
-ignore(7.5, None)
-ignore(None, 6.)
-
-group_counts(11, 25)
-# Set reasonable starting values to ensure convergence
-g1.pos = 6.7
-g1.fwhm = 0.2
-g1.ampl = 1e-5
-fit(11)
-conf(11)
-save_pars('Feline.pars', [c1, g1], clobber=True)
-
-# So, we have a super normal 6.7 keV line.
-
-#subtract(11)
-for i in [11,12,13]:
-    group_counts(i, 25)
-
-notice(None, None)
-ignore(None, .2)
-ignore(9., None)
-
-for i in [11,12,13]:
-    # Global fit
-    set_model(i, xsphabs.a1 * (xsvapec.v1 + xsvapec.v2 + xsvapec.v3))
-
-for v in [v2, v3]:
-    for elem in ['C', 'N', 'O','Ne', 'Fe', 'Si', 'Mg']:
-        setattr(v, elem, getattr(v1, elem))
-
-
-v1.Fe.frozen = False
-v1.Si = v1.Fe
-v1.Mg = v1.Fe
-v1.Ne.frozen = False
-
-# Set to reasonable values before fit to speed convergence
-a1.nH = 0.2
-v1.kT = 0.3
-v2.kT = 1.5
-v3.kT = 5.
-fit(11, 12, 13)
-save_pars('RWAurXMM.pars', [a1, v1, v2, v3], clobber=True)
-conf(11, 12, 13)
-
-save_conf('fit_XMM.json', energy_flux=11, absorbpars=[a1.nH])
-
-# The Chandra data has much fewer counts.
-# We just want to know here is the spectra are compatible
-# in general, so we fix many of the parameters.
-v1.Fe.frozen = True
-v1.Ne.frozen = True
-v1.kT.frozen = True
-v2.kT.frozen = True
-v3.kT.frozen = True
+from base_fit import *
 
 ### Fitting Chandra data from B
 for i, obsid in enumerate(['14539', '17644', '17764', '19980']):
     load_data(i + 1, obsid + '_B_grp.pi')
     load_bkg(i + 1, obsid + '_B_bkg.pi')
 
-for i in [1, 2, 3, 4]:
+load_data(5, '2017_B_src.pi')
+load_bkg(5, '2017_B_bkg.pi')
+
+for i in [1, 2, 3, 4, 5]:
     ignore_bad(i)
 
 
 ignore(None, 0.3)
 ignore(9., None)
 
-for i in [1,2,3,4]:
+for i in [1, 2, 3, 4, 5]:
     group_counts(i, 15)
 
 
-for i in [1,2,3,4]:
-    set_source(i, a1 * (v1 + v2 + v3))
-
-for i in [3,4]:
-    set_pileup_model(i, jdpileup.jdp)
-
-fit(1)
-save_pars('RWAurBChan1.pars', [a1, v1, v2, v3], clobber=True)
-conf(1)
-save_conf('chanB1.json', energy_flux=1, absorbpars=[a1.nH])
+#for i in [3,4,5]:
+#    set_pileup_model(i, jdpileup.jdp)
 
 
-fit(2)
-save_pars('RWAurBChan2.pars', [a1, v1, v2, v3], clobber=True)
-conf(2)
-save_conf('chanB2.json', energy_flux=2, absorbpars=[a1.nH])
+set_model(1, xsphabs.a1 * (xsvapec.v11 + xsvapec.v12))
+set_model(2, xsphabs.a2 * (xsvapec.v21 + xsvapec.v22))
+set_model(3, xsphabs.a3 * (xsvapec.v31 + xsvapec.v32))
+set_model(4, xsphabs.a3 * (xsvapec.v31 + xsvapec.v32))
+set_model(5, xsphabs.a3 * (xsvapec.v31 + xsvapec.v32))
 
-fit(3,4)
-save_pars('RWAurBChan3.pars', [a1, v1, v2, v3], clobber=True)
-conf(3,4, a1.nH, v1.norm, v2.norm, v3.norm)
-save_conf('chanB3.json', energy_flux=3, absorbpars=[a1.nH])
+for t1, t2 in [(v11, v12), (v21, v22), (v31, v32)]:
+    for elem in ['C', 'N', 'O','Ne', 'Fe', 'Si', 'Mg']:
+        setattr(t2, elem, getattr(t1, elem))
+
+for v in [v11, v21, v31]:
+    v.Fe.frozen = False
+    v.Si = v.Fe
+    v.Mg = v.Fe
+    v.Ne.frozen = False
+    # and set some reasonable starting value to speed convergence
+    v.kT = 1.
+    v.Fe = 0.5
+    v.Ne = 4
+
+a2.nH = a1.nH
+v21.Ne = v11.Ne
+v21.Fe = v11.Fe
+v21.kT = v11.kT
+v22.kT = v12.kT
+a3.nH = a1.nH
+v31.Ne = v11.Ne
+v31.Fe = v11.Fe
+v31.kT = v11.kT
+v32.kT = v12.kT
+
+fit(1,2,3,4)
+conf(1,2,3,4)
+
+save_pars('RWAurB.pars', [a1, v11, v12, v21,v22, v31, v32], clobber=True)
+
+
+for i in [1,2,3,4,5]:
+    subtract(i)
+
+plot_fit(1)
+log_scale()
+plot_fit(2, overplot=True)
+plot_fit(5, overplot=True)
+
+
+colors = ['red', 'blue', 'default']
+for i, c in enumerate(colors):
+    crv = 'crv{0}'.format(2*i+1)
+    set_curve(crv, "*.color={}".format(c))
+    crv = 'crv{0}'.format(2*i+2)
+    set_curve(crv, "*.color={}".format(c))
+
+add_label(.7, 0.001 * .6**2, "2013-Jan-12", ["color", "red"])
+add_label(.7, 0.001 * 0.6, "2015-Apr-16", ["color", "blue"])
+add_label(.7, 0.001, "2017-Jan (merged)", ["color", "default"])
+set_label("all", ['size', 30])
+
+# Now make the plot nicer
+set_arbitrary_tick_positions("ax1",[5,3,2,1,0.5,8],["5","3","2","1","0.5","8"])
+set_axis("ax1","minortick.visible=0 tickformat=%3.1g label.size=30 ticklabel.size=26 offset.perpendicular=60")
+log_scale(X_AXIS)
+set_arbitrary_tick_positions("ax1",[5,3,2,1,0.5,8],["5","3","2","1","0.5","8"])
+set_axis("ay1","label.size=30 offset.perpendicular=90.00 ticklabel.size=26 ")
+
+set_plot_title("")
+plot = get_plot()
+plot.rightmargin = 0.01
+plot.topmargin = 0.01
+plot.leftmargin = 0.17
+plot.bottommargin = 0.15
+set_plot(plot)
+
+limits(X_AXIS, 0.4, 5.1)
+limits(Y_AXIS, 0.0003, 0.12)
+
+print_window('/melkor/d1/guenther/Dropbox/my_articles/RWAur/specB.png', ['export.clobber', True])
+print_window('/melkor/d1/guenther/Dropbox/my_articles/RWAur/specB.pdf', ['export.clobber', True])

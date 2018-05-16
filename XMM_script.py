@@ -55,9 +55,13 @@ with open('XMM_commands.csh', 'w') as f:
     f.write('#### PN data in time intervals ###\n')
     # make gtis for spectral extraction
 
-    tintervals = ['quiet', 'rise', 'top', 'decay1', 'decay2']
-    # In in ks fomr the beginning of the lightcurve
-    times = np.array([0., 19., 22., 25., 28., 35.])
+    #tintervals = ['quiet', 'rise', 'top', 'decay1', 'decay2']
+    # In in ks from the beginning of the lightcurve
+    #times = np.array([0., 19., 22., 25., 28., 35.])
+    tintervals = ['basal', 'fullflare']
+    # In in ks from the beginning of the lightcurve
+    times = np.array([0., 19., 35.])
+
     times = times * 1e3 + 288447000.
 
     for j, i in enumerate(tintervals):
@@ -84,3 +88,7 @@ with open('XMM_commands.csh', 'w') as f:
             basename = "spec_{}_{}".format(name, inst)
             f.write('rm {}.15grp\n'.format(basename))
             f.write('grppha {0}.fits {0}.15grp comm="chkey respfile {0}.rmf & chkey backfile {0}bg.fits & chkey ancrfile {0}.arf & group min 15 & exit"\n'.format(basename))
+
+
+# omfchain timebinsize=300
+#
