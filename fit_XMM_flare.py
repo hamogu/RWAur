@@ -88,7 +88,7 @@ v22.kT = v12.kT
 fit(1,2,3,11,12,13)
 conf(1,2,3,11,12,13)
 
-save_pars('RWAurXMMflare.pars', [a1, v21, v22], clobber=True)
+save_pars('RWAurXMMflare.pars', [a1, a2, v11, v12, v21, v22], clobber=True)
 
 plot_fit(1)
 plot_fit(11, overplot=True)
