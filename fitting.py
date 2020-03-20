@@ -2,18 +2,18 @@ import sys
 sys.path.append('/melkor/d1/guenther/projects/Chandraprojects/RWAur/')
 from base_fit import *
 
-for i, obsid in enumerate(['14539', '17644', '17764', '19980']):
+for i, obsid in enumerate(['14539', '17644', '17764', '19980', '21176']):
     load_data(i + 1, obsid + '_A_grp.pi')
     load_bkg(i + 1, obsid + '_A_bkg.pi')
 
 # For plotting, use merged data, for fitting use spearate
-load_data(5, '2017_A_src.pi')
-load_bkg(5, '2017_A_bkg.pi')
+load_data(34, '2017_A_src.pi')
+load_bkg(34, '2017_A_bkg.pi')
 
-for i in [1,2,3,4, 5]:
+for i in range(1, 7):
     ungroup(i)
 
-for i in [1, 2, 3, 4, 5]:
+for i in range(1,7):
     ignore_bad(i)
 
 ignore(None, 0.3)
@@ -23,11 +23,12 @@ set_bkg_source(1, scale1d.scaleB * xsphabs.a1 * (xsvapec.v11 + xsvapec.v12))
 set_bkg_source(2, scale1d.scaleB * xsphabs.a1 * (xsvapec.v21 + xsvapec.v22))
 set_bkg_source(3, scale1d.scaleB * xsphabs.a1 * (xsvapec.v31 + xsvapec.v32))
 set_bkg_source(4, scale1d.scaleB * xsphabs.a1 * (xsvapec.v31 + xsvapec.v32))
-set_bkg_source(5, scale1d.scaleB * xsphabs.a1 * (xsvapec.v31 + xsvapec.v32))
+set_bkg_source(6, scale1d.scaleB * xsphabs.a1 * (xsvapec.v31 + xsvapec.v32))
+set_bkg_source(5, scale1d.scaleB * xsphabs.a1 * (xsvapec.v41 + xsvapec.v42))
 
 load_pars('RWAurB.pars', [a1, v11, v12, v21,v22, v31, v32])
 
-for model in [a1, v11, v12, v21,v22, v31, v32]:
+for model in [a1, v11, v12, v21,v22, v31, v32, v41, v42]:
         for par in model.pars:
                 par.frozen=True
 
@@ -40,8 +41,8 @@ set_source(1, xsphabs.Aa1 * (xsvapec.Av11 + xsvapec.Av12))
 set_source(2, xsphabs.Aa2 * (xsvapec.Av21 + xsvapec.Av22))
 set_source(3, xsphabs.Aa3 * (xsvapec.Av31 + xsvapec.Av32))
 set_source(4, Aa3 * (Av31 + Av32))
-set_source(5, Aa3 * (Av31 + Av32))
-
+set_source(6, Aa3 * (Av31 + Av32))
+set_source(5, xsphabs.Aa4 * (xsvapec.Av41 + xsvapec.Av42))
 
 Av11.Ne.frozen = False
 Av12.Ne = Av11.Ne
@@ -72,13 +73,16 @@ set_stat('cash')
 fit(1)
 fit(2)
 fit(3,4)
+fit(5)
 save_pars('RWAurA13_2T.pars', [Aa1, Av11, Av12], clobber=True)
 save_pars('RWAurA15_2T.pars', [Aa2, Av21, Av22], clobber=True)
 save_pars('RWAurA17_2T.pars', [Aa3, Av31, Av32], clobber=True)
+save_pars('RWAurA18_2T.pars', [Aa4, Av41, Av42], clobber=True)
 
 conf(1)
 conf(2)
 conf(3,4)
+conf(5)
 ### Results of conf runs
 Dataset               = 1
 Confidence Method     = confidence
@@ -124,19 +128,19 @@ sherpa-58>
 
 
 # Group for plotting
-for i in [1,2,5]:
+for i in [1,2,5,6]:
     group_counts(i, 5)
 
-for i in [1,2,5]:
+for i in [1,2,5,6]:
     subtract(i)
 
 plot_fit(1)
 log_scale()
 plot_fit(2, overplot=True)
 plot_fit(5, overplot=True)
+plot_fit(6, overplot=True)
 
-
-colors = ['red', 'blue', 'default']
+colors = ['red', 'blue', 'green', 'default']
 for i, c in enumerate(colors):
     crv = 'crv{0}'.format(2*i+1)
     set_curve(crv, "*.color={}".format(c))
