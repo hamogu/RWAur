@@ -1,3 +1,4 @@
+# run in tcsh with > source imageanalysis.csh
 set scriptdir = $PWD
 
 cd /melkor/d1/guenther/downdata/Chandra/RWaur
@@ -10,10 +11,9 @@ set bkga = "pie(5:07:49.435,+30:24:04.706,0.016666667',0.033333333',230.0018,470
 set srcb = "circle(5:07:49.434,+30:24:04.692,0.00900')"
 set bkgb = "circle(5:07:49.470,+30:24:46.246,0.41469')"
 
-foreach obsid (14539 17644 17764 19980)
-    # Dam. I forgot to ask for sub-array read-out and thus the new observations
-    # suffer from pile-up.
-    # Check how much and how far out that goes!
+foreach obsid (14539 17644 17764 19980 21176 22323 23100 23101 23102)
+    # Dam. I forgot to ask for sub-array read-out in 2015 
+    # Check how much pile up that had!
     dmcopy "${obsid}/${obsid}_evt2.fits[EVENTS][bin x=4050:4150:1,y=4050:4150:1]" $obsid/{$obsid}_fullband_image.fits option=image clob+
     pileup_map $obsid/{$obsid}_fullband_image.fits $obsid/{$obsid}_fullband_pileup.fits clob+
 
@@ -39,9 +39,16 @@ foreach obsid (14539 17644 17764 19980)
 
 end
 
+
 # Combine 2017 spectra. This is not used for analysis, only for display purposes.
 combine_spectra 17764_A_grp.pi,19980_A_grp.pi 2017_A bscale_method='time' clob+
 combine_spectra 17764_B_grp.pi,19980_B_grp.pi 2017_B bscale_method='time' clob+
+
+# Combine 2019 spectra. This is not used for analysis, only for display purposes.
+combine_spectra 22323_A_grp.pi,23100_A_grp.pi,23101_A_grp.pi,23102_A_grp.pi 2019_A bscale_method='time' clob+
+combine_spectra 22323_B_grp.pi,23100_B_grp.pi,23101_B_grp.pi,23102_B_grp.pi 2019_B bscale_method='time' clob+
+
+
 
 # Split extraction of 2017 (1) steady and flare
 
@@ -54,7 +61,28 @@ specextract infile="17764/17764_evt2_preflare.fits[sky=$srcb]" bkgfile="17764/17
 specextract infile="17764/17764_evt2_flare.fits[sky=$srca]" bkgfile="17764/17764_evt2_flare.fits[sky=$bkga]" outroot=17764_A_flare correctpsf=yes weight=no asp=17764/full_asol_corrected.fits clob+
 specextract infile="17764/17764_evt2_flare.fits[sky=$srcb]" bkgfile="17764/17764_evt2_flare.fits[sky=$bkgb]" outroot=17764_B_flare correctpsf=yes weight=no asp=17764/full_asol_corrected.fits clob+
 
+# Split extraction of 2018 into steady and flare
 
+dmcopy "21176/21176_evt2.fits[exclude time=659495000:659508000]" 21176/21176_evt2_noflare.fits
+dmcopy "21176/21176_evt2.fits[time=659495000:659508000]" 21176/21176_evt2_flare.fits
+
+specextract infile="21176/21176_evt2_noflare.fits[sky=$srca]" bkgfile="21176/21176_evt2_noflare.fits[sky=$bkga]" outroot=21176_A_noflare correctpsf=yes weight=no asp=21176/full_asol_corrected.fits clob+
+specextract infile="21176/21176_evt2_noflare.fits[sky=$srcb]" bkgfile="21176/21176_evt2_noflare.fits[sky=$bkgb]" outroot=21176_B_noflare correctpsf=yes weight=no asp=21176/full_asol_corrected.fits clob+
+
+specextract infile="21176/21176_evt2_flare.fits[sky=$srca]" bkgfile="21176/21176_evt2_flare.fits[sky=$bkga]" outroot=21176_A_flare correctpsf=yes weight=no asp=21176/full_asol_corrected.fits clob+
+specextract infile="21176/21176_evt2_flare.fits[sky=$srcb]" bkgfile="21176/21176_evt2_flare.fits[sky=$bkgb]" outroot=21176_B_flare correctpsf=yes weight=no asp=21176/full_asol_corrected.fits clob+
+
+# Process optical monitor data
+foreach obsid (17644 17764 19980 21176 22323 23100 23101 23102)
+
+cd ${obsid}/secondary/aspect
+gunzip *adat71.fits.gz
+ls -1 *adat71.fits > adat71.lis
+dmmerge infile=@adat71.lis outfile=pcad_adat71.fits clobber=yes
+monitor_photom infile=pcad_adat71.fits outfile="../../../monitor_${obsid}_lc.fit" verbose=1 clobber=yes
+cd ../../../
+
+end
 
 cd $scriptdir
 

@@ -5,4 +5,4 @@ circle(5:07:49.548,+30:24:05.078,0.540") # color=blue width=3 font="helvetica 18
 panda(5:07:49.435,+30:24:04.706,230,470,1,1.",2.",1) # color=blue width=3 font="helvetica 14 normal roman" text={} background
 # text(5:07:49.443,+30:24:04.747) color=blue font="helvetica 18 normal roman" text={B}
 # text(5:07:49.548,+30:24:05.078) color=blue font="helvetica 18 normal roman" text={A}
-line(5:07:49.887,+30:24:01.800,5:07:49.732,+30:24:01.800) # line=0 0 color=blue width=2 font="helvetica 16 normal roman" text={2"}
+line(5:07:49.7528,+30:24:03.084,5:07:49.5978,+30:24:03.084) # line=0 0 color=blue width=2 font="helvetica 16 normal roman" text={2"}
