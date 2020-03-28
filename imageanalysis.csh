@@ -37,16 +37,23 @@ foreach obsid (14539 17644 17764 19980 21176 22323 23100 23101 23102)
     specextract infile="${obsid}/${obsid}_evt2.fits[sky=$srca]" bkgfile="${obsid}/${obsid}_evt2.fits[sky=$bkga]" outroot=${obsid}_A correctpsf=yes weight=no asp=${obsid}/full_asol_corrected.fits clob+
     specextract infile="${obsid}/${obsid}_evt2.fits[sky=$srcb]" bkgfile="${obsid}/${obsid}_evt2.fits[sky=$bkgb]" outroot=${obsid}_B correctpsf=yes weight=no asp=${obsid}/full_asol_corrected.fits clob+
 
+    # Extract radial profiles
+    # Not sure if the centroiding was done well enough for this to be useful, but visual inspection
+    # of the annuli regions in ds9 looks good
+    dmcopy "${obsid}/${obsid}_evt2.fits[exclude sky=region(${scriptdir}/RWAurB_annulus_subtr_A.reg)]" ${obsid}/${obsid}_evt2_exclA.fits clob+
+    punlearn dmextract
+    dmextract "${obsid}/${obsid}_evt2_exclA.fits[bin sky=@${scriptdir}/RWAurB_annulus.reg]" ${obsid}_rprofile.fits bkg="${obsid}/${obsid}_evt2_exclA.fits[bin sky=@${scriptdir}/RWAurB_annulus_bkg.reg]" opt=generic clob+
+
 end
 
 
 # Combine 2017 spectra. This is not used for analysis, only for display purposes.
-combine_spectra 17764_A_grp.pi,19980_A_grp.pi 2017_A bscale_method='time' clob+
-combine_spectra 17764_B_grp.pi,19980_B_grp.pi 2017_B bscale_method='time' clob+
+combine_spectra 17764_A_grp.pi,19980_A_grp.pi 2017_A bscale_method='counts' clob+
+combine_spectra 17764_B_grp.pi,19980_B_grp.pi 2017_B bscale_method='counts' clob+
 
 # Combine 2019 spectra. This is not used for analysis, only for display purposes.
-combine_spectra 22323_A_grp.pi,23100_A_grp.pi,23101_A_grp.pi,23102_A_grp.pi 2019_A bscale_method='time' clob+
-combine_spectra 22323_B_grp.pi,23100_B_grp.pi,23101_B_grp.pi,23102_B_grp.pi 2019_B bscale_method='time' clob+
+combine_spectra 22323_A_grp.pi,23100_A_grp.pi,23101_A_grp.pi,23102_A_grp.pi 2019_A bscale_method='counts' clob+
+combine_spectra 22323_B_grp.pi,23100_B_grp.pi,23101_B_grp.pi,23102_B_grp.pi 2019_B bscale_method='counts' clob+
 
 
 
