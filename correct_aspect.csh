@@ -5,32 +5,28 @@ cd /melkor/d1/guenther/downdata/Chandra/RWaur
 # Just makes for easier plotting and defining extraction regions
 # if they are all on the same coordinate system
 
-foreach obsid (14539 17644 17764 19980 21176)
+#foreach obsid (14539 17644 17764 19980 21176 22323 23100 23101 23102)
+#
+#  dmcopy "$obsid/repro/acisf*fov1*[ccd_id=7]" s3.fov clob+
+#  dmcopy "$obsid/repro/acisf*evt2*[ccd_id=7,sky=region(s3.fov)]" $obsid/evt2_s3.fits clob+
+#  fluximage $obsid/evt2_s3.fits binsize=1 bands=broad outroot=$obsid/s3 clob+
+#  mkpsfmap $obsid/s3_broad_thresh.img outfile=$obsid/s3_psfmap.fits energy=1.4967 ecf=0.90 clob+
+#
+#  ### First, run wavdetect to find sources
+#
+#  punlearn wavdetect
+#  wavdetect infile=$obsid/s3_broad_thresh.img psffile=$obsid/s3_psfmap.fits outfile=$obsid/{$obsid}s3_src.fits scellfile=$obsid/{$obsid}s3_scell.fits imagefile=$obsid/{$obsid}s3_imgfile.fits defnbkgfile=$obsid/{$obsid}s3_nbgd.fits regfile=$obsi$d/{$obsid}_s3_src.reg scales="1 2 4" clob+
+#  # Retain only the most significant sources with small positional errors
+#  # Might be better to just shift RW Aur on top if itself, but let's try this.
+#  dmcopy "$obsid/${obsid}s3_src.fits[filter SRC_SIGNIFICANCE=30:]" $obsid/${obsid}s3_src_filt.fits option=all clob+
+#
+#end
 
-  dmcopy "$obsid/primary/acisf*fov1*[ccd_id=7]" s3.fov clob+
-  dmcopy "$obsid/primary/acisf*evt2*[ccd_id=7,sky=region(s3.fov)]" $obsid/evt2_s3.fits clob+
-  fluximage $obsid/evt2_s3.fits binsize=1 bands=broad outroot=$obsid/s3 clob+
-  mkpsfmap $obsid/s3_broad_thresh.img outfile=$obsid/s3_psfmap.fits energy=1.4967 ecf=0.90 clob+
-
-  ### First, run wavdetect to find sources
-
-  punlearn wavdetect
-  wavdetect infile=$obsid/s3_broad_thresh.img psffile=$obsid/s3_psfmap.fits outfile=$obsid/{$obsid}s3_src.fits scellfile=$obsid/{$obsid}s3_scell.fits imagefile=$obsid/{$obsid}s3_imgfile.fits defnbkgfile=$obsid/{$obsid}s3_nbgd.fits regfile=$obsid/{$obsid}_s3_src.reg scales="1 2 4" clob+
-  # Retain only the most significant sources with small positional errors
-  # Might be better to just shift RW Aur on top if itself, but let's try this.
-  dmcopy "$obsid/${obsid}s3_src.fits[filter SRC_SIGNIFICANCE=30:]" $obsid/${obsid}s3_src_filt.fits option=all clob+
-
+foreach obsid (14539 17644 17764 19980 21176 22323 23100 23101 23102)
+  dmmerge @$obsid/repro/*asol1.lis $obsid/full_asol.fits clob+
+  dmcopy $obsid/repro/*evt2* $obsid/{$obsid}_evt2.fits op=all clob+
 end
 
-dmmerge 14539/primary/pcadf474340808N002_asol1.fits.gz 14539/full_asol.fits clob+
-dmmerge "17644/primary/pcadf545554454N001_asol1.fits.gz,17644/primary/pcadf545554606N001_asol1.fits.gz" 17644/full_asol.fits clob+
-dmmerge "17764/primary/pcadf600332149N001_asol1.fits.gz,17764/primary/pcadf600332281N001_asol1.fits.gz" 17764/full_asol.fits clob+
-dmmerge 19980/primary/pcadf600486674N001_asol1.fits.gz 19980/full_asol.fits clob+
-dmmerge "21176/primary/pcadf659473256N001_asol1.fits.gz,21176/primary/pcadf659473367N001_asol1.fits.gz" 21176/full_asol.fits clob+
-dmmerge "22323/primary/pcadf692887954N001_asol1.fits.gz,22323/primary/pcadf692888032N001_asol1.fits.gz" 22323/full_asol.fits clob+
-dmmerge "23100/primary/pcadf693017199N001_asol1.fits.gz,23100/primary/pcadf693017355N001_asol1.fits.gz" 23100/full_asol.fits clob+
-dmmerge "23101/primary/pcadf693099568N001_asol1.fits.gz,23101/primary/pcadf693099683N001_asol1.fits.gz" 23101/full_asol.fits clob+
-dmmerge "23102/primary/pcadf693048347N001_asol1.fits.gz,23102/primary/pcadf693048490N001_asol1.fits.gz" 23102/full_asol.fits clob+
 # match everything to first observation
 # but run on all 4 of them (the first one is matched to itself)
 # to make sure event files that follow the same naming convention are produced.
@@ -75,12 +71,6 @@ dmmerge "23102/primary/pcadf693048347N001_asol1.fits.gz,23102/primary/pcadf69304
 # 23101 4106.0097 4126.5709 4106.1227 4127.3473
 # 23102 4106.4298 4125.1914 4106.5561 4126.0634
 # From this I can calculate pixel offset
-
-
-# wcs_update wants the offset in sky pixels. 
-foreach obsid (14539 17644 17764 19980 21176 22323 23100 23101 23102)
-  dmcopy $obsid/primary/*evt2* $obsid/{$obsid}_evt2.fits op=all clob+
-end
 
 wcs_update infile=14539/full_asol.fits outfile=14539/full_asol_corrected.fits  wcsfile=14539/s3_broad_thresh.img clob+ transformfile="" deltax=0.19 deltay=0.54
 wcs_update infile=14539/14539_evt2.fits outfile="" wcsfile=14539/s3_broad_thresh.img  transformfile="" deltax=0.19 deltay=0.54
