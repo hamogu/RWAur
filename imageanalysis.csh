@@ -36,8 +36,8 @@ foreach obsid (14539 17644 17764 19980 21176 22323 23100 23101 23102)
     # Extract spectra
     punlearn specextract
     punlearn ardlib
-    specextract infile="${obsid}/${obsid}_evt2.fits[sky=$srca]" bkgfile="${obsid}/${obsid}_evt2.fits[sky=$bkga]" outroot=${obsid}_A correctpsf=yes weight=no asp=${obsid}/full_asol_corrected.fits badpixfile="${obsid}/repro/*bpix1.fits" clob+
-    specextract infile="${obsid}/${obsid}_evt2.fits[sky=$srcb]" bkgfile="${obsid}/${obsid}_evt2.fits[sky=$bkgb]" outroot=${obsid}_B correctpsf=yes weight=no asp=${obsid}/full_asol_corrected.fits badpixfile="${obsid}/repro/*bpix1.fits" clob+
+    specextract infile="${obsid}/${obsid}_evt2.fits[sky=$srca]" bkgfile="${obsid}/${obsid}_evt2.fits[sky=$bkga]" outroot=${obsid}_A correctpsf=yes weight=no asp=${obsid}/full_asol_corrected.fits badpixfile=${obsid}/repro/acisf${obsid}_repro_bpix1.fits clob+
+    specextract infile="${obsid}/${obsid}_evt2.fits[sky=$srcb]" bkgfile="${obsid}/${obsid}_evt2.fits[sky=$bkgb]" outroot=${obsid}_B correctpsf=yes weight=no asp=${obsid}/full_asol_corrected.fits badpixfile=${obsid}/repro/acisf${obsid}_repro_bpix1.fits clob+
 
     # Extract radial profiles
     # Not sure if the centroiding was done well enough for this to be useful, but visual inspection

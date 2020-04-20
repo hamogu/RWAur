@@ -1,6 +1,9 @@
 # run with "source ciaoscript.tcsh"
 
 cd /melkor/d1/guenther/downdata/Chandra/RWaur
+
+chandra_repro indir="*" outdir=''
+
 # Improve astrometry, because one of the obs is off.
 # Just makes for easier plotting and defining extraction regions
 # if they are all on the same coordinate system
@@ -23,7 +26,7 @@ cd /melkor/d1/guenther/downdata/Chandra/RWaur
 #end
 
 foreach obsid (14539 17644 17764 19980 21176 22323 23100 23101 23102)
-  dmmerge @$obsid/repro/*asol1.lis $obsid/full_asol.fits clob+
+  dmmerge "@${obsid}/repro/acisf${obsid}_asol1.lis" $obsid/full_asol.fits clob+
   dmcopy $obsid/repro/*evt2* $obsid/{$obsid}_evt2.fits op=all clob+
 end
 
