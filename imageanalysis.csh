@@ -48,14 +48,16 @@ foreach obsid (14539 17644 17764 19980 21176 22323 23100 23101 23102)
 
 end
 
-
 # Combine 2017 spectra. This is not used for analysis, only for display purposes.
-combine_spectra 17764_A_grp.pi,19980_A_grp.pi 2017_A bscale_method='counts' clob+
-combine_spectra 17764_B_grp.pi,19980_B_grp.pi 2017_B bscale_method='counts' clob+
+# bscale_method='counts' would be ideal, but those files do not work in Sherpa at the moment
+# https://github.com/sherpa/sherpa/issues/797
+# Thus, use method 'asca' for now. It's OK for plotting.
+combine_spectra 17764_A_grp.pi,19980_A_grp.pi 2017_A bscale_method='asca' clob+
+combine_spectra 17764_B_grp.pi,19980_B_grp.pi 2017_B bscale_method='asca' clob+
 
 # Combine 2019 spectra. This is not used for analysis, only for display purposes.
-combine_spectra 22323_A_grp.pi,23100_A_grp.pi,23101_A_grp.pi,23102_A_grp.pi 2019_A bscale_method='counts' clob+
-combine_spectra 22323_B_grp.pi,23100_B_grp.pi,23101_B_grp.pi,23102_B_grp.pi 2019_B bscale_method='counts' clob+
+combine_spectra 22323_A_grp.pi,23100_A_grp.pi,23101_A_grp.pi,23102_A_grp.pi 2019_A bscale_method='asca' clob+
+combine_spectra 22323_B_grp.pi,23100_B_grp.pi,23101_B_grp.pi,23102_B_grp.pi 2019_B bscale_method='asca' clob+
 
 
 
